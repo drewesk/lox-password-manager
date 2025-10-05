@@ -285,6 +285,10 @@ def insert(name, username, url, notes, tags, multiline, storage_path):
             print_error("Password cannot be empty")
             sys.exit(1)
         
+        # Check if entry already exists
+        existing_entry = storage.get_password(master_password, name)
+        is_update = existing_entry is not None
+        
         # Check if password is breached
         print_info("Checking if password has been breached...")
         breach_checker = PasswordBreachChecker()
@@ -315,7 +319,10 @@ def insert(name, username, url, notes, tags, multiline, storage_path):
         )
         
         click.echo()
-        print_success(f"Password '{name}' added to vault", icon='🔐')
+        if is_update:
+            print_success(f"Password '{name}' updated in vault", icon='🔄')
+        else:
+            print_success(f"Password '{name}' added to vault", icon='🔐')
         print_info(f"💡 Retrieve with: lox show {name} --clip")
         
     except Exception as e:
@@ -398,6 +405,10 @@ def generate(name, length, no_symbols, clip, username, url, tags, storage_path):
     try:
         master_password = get_master_password(storage)
         
+        # Check if entry already exists
+        existing_entry = storage.get_password(master_password, name)
+        is_update = existing_entry is not None
+        
         # Generate password
         crypto = MultiLayerEncryption()
         password = crypto.generate_secure_password(
@@ -419,7 +430,10 @@ def generate(name, length, no_symbols, clip, username, url, tags, storage_path):
             clipboard = SecureClipboard(timeout=45)
             clipboard.copy(password)
             click.echo()
-            print_success(f"Generated password for '{name}'!", icon='⚡')
+            if is_update:
+                print_success(f"Updated password for '{name}'!", icon='🔄')
+            else:
+                print_success(f"Generated password for '{name}'!", icon='⚡')
             print_success(f"Copied to clipboard (clears in 45s)", icon='📋')
         else:
             click.echo()

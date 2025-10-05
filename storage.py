@@ -132,18 +132,25 @@ class EncryptedStorage:
         entry_json = json.dumps(entry).encode('utf-8')
         encrypted_data = self.crypto.encrypt(entry_json, master_password)
         
-        # Generate ID by encrypting the name (provides obfuscation)
-        entry_id = b64encode(
-            self.crypto.encrypt(name.encode(), master_password)[:32]
-        ).decode().replace('/', '_').replace('+', '-')[:32]
+        # Generate deterministic ID from name using hash (for consistent overwrites)
+        import hashlib
+        entry_id = hashlib.sha256(name.encode('utf-8')).hexdigest()[:32]
         
         timestamp = int(time.time())
+        
+        # Check if entry exists to preserve created_at
+        existing = self.conn.execute(
+            'SELECT created_at FROM passwords WHERE id = ?',
+            (entry_id,)
+        ).fetchone()
+        
+        created_at = existing[0] if existing else timestamp
         
         self.conn.execute(
             '''INSERT OR REPLACE INTO passwords 
                (id, encrypted_data, created_at, modified_at, accessed_at)
                VALUES (?, ?, ?, ?, ?)''',
-            (entry_id, encrypted_data, timestamp, timestamp, timestamp)
+            (entry_id, encrypted_data, created_at, timestamp, timestamp)
         )
         
         self.conn.commit()
