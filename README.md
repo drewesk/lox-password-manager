@@ -435,6 +435,150 @@ chmod 600 ~/.lox/vault.db
 chmod 700 ~/.lox
 ```
 
+## 🖥️ Graphical User Interface (GUI)
+
+Lox now includes a modern, user-friendly GUI for those who prefer visual interfaces over command-line.
+
+### Launching the GUI
+
+```bash
+# From the lox directory
+cd ~/lox
+python gui.py
+
+# Or if you added to PATH
+lox-gui
+```
+
+### GUI Features
+
+#### 1. **Beautiful Dark Theme**
+- Modern dark UI with accent colors
+- Visual feedback with emojis and icons
+- Responsive layout for different screen sizes
+
+#### 2. **Vault Management**
+- **Login Screen**: Unlock existing vault or create new one
+- **Vault Browser**: List all passwords with search and filtering
+- **Password Details**: View complete entry information with show/hide password
+- **Secure Clipboard**: One-click copy with auto-clear (45 seconds)
+
+#### 3. **Password Operations**
+- **Add New**: Manual password entry with breach checking
+- **Generate**: Create secure passwords with customizable length and symbols
+- **Edit/Delete**: Modify or remove existing entries
+- **Search**: Real-time search across names, usernames, URLs, and tags
+
+#### 4. **Advanced Features**
+- **Password Strength Analysis**: Real-time strength meter
+- **Breach Checking**: Integration with Have I Been Pwned
+- **Session Management**: 5-minute automatic logout
+- **Rate Limiting**: Protection against brute force attacks
+
+### GUI Screenshots
+
+#### Login Screen
+```
+🔐 Lox Password Manager
+Secure password management with military-grade encryption
+
+[Unlock Existing Vault] [Create New Vault]
+```
+
+#### Main Interface
+```
+🔐 Lox Password Vault
+Search: [_________]
+
+┌─────────────────┐ ┌─────────────────┐
+│ Stored Passwords │ │ Password Details│
+│ • github         │ │ Name: github    │
+│ • gmail          │ │ Username: user@ │
+│ • aws-prod       │ │ URL: https://   │
+│                  │ │ Password: ••••• │
+│                  │ │ [Copy] [Edit]   │
+└─────────────────┘ └─────────────────┘
+[Export Vault] [Import Backup] [🔒 Lock]
+```
+
+## 📤 Enhanced Export Features
+
+Lox now includes advanced export options for backup and recovery.
+
+### Standard Export
+```bash
+# Encrypts vault with your master password
+lox export ~/backup/passwords.lox
+```
+
+### Export with Recovery Key (NEW)
+```bash
+# Creates emergency recovery key for vault access
+# Generates two files: vault.lox + vault.lox.recovery.key
+# GUI: Export → "Export with Recovery Key"
+```
+
+### Recovery Key System
+
+#### What is a Recovery Key?
+- A **random 256-bit key** (64 hex characters)
+- Can decrypt your vault if you forget your master password
+- Generated once during export and shown only once
+- Stored encrypted in the export file
+
+#### How It Works
+1. **Dual Encryption**: Vault encrypted with both master password AND recovery key
+2. **Emergency Access**: Use recovery key if master password is forgotten
+3. **Secure Storage**: Recovery key itself is encrypted with master password
+4. **Paper Backup**: Optional separate recovery key file for safe keeping
+
+#### Recovery Key Format
+```
+{
+  "warning": "EMERGENCY RECOVERY KEY - KEEP SECURE",
+  "vault_file": "passwords-2025.lox",
+  "recovery_key_hex": "a1b2c3d4e5f6... (64 characters)",
+  "encrypted_recovery_key": "base64_encrypted_data..."
+}
+```
+
+### Import Functionality
+```bash
+# Restore from backup (GUI only for now)
+# Supports both standard and recovery exports
+```
+
+### Backup Best Practices
+1. **Weekly Backups**: Export vault every Sunday
+2. **Multiple Locations**: USB drive + external hard drive + secure cloud
+3. **Test Restores**: Periodically test import functionality
+4. **Recovery Keys**: Generate with important vaults, store in safe/offsite
+
+## 🔧 GUI vs CLI Comparison
+
+| Feature | Command Line (CLI) | Graphical (GUI) |
+|---------|-------------------|----------------|
+| **Vault Access** | `lox init`, `lox show` | Login screen, unlock vault |
+| **Password View** | `lox list`, `lox show` | Browser with details panel |
+| **Add Password** | `lox insert` | Form with breach checking |
+| **Generate Password** | `lox generate` | Generator with preview |
+| **Export/Import** | `lox export` | Dialog with recovery key options |
+| **Search** | `lox search` | Real-time search as you type |
+| **Clipboard** | `--clip` flag | One-click copy buttons |
+| **Best For** | Scripting, automation, servers | Daily use, beginners, visual learners |
+
+### When to Use CLI
+- Automating password management
+- Server environments (no GUI)
+- Power users who prefer terminals
+- Batch operations (scripting)
+
+### When to Use GUI
+- Daily password access
+- Users new to password managers
+- Visual organization and browsing
+- Quick copy-paste workflows
+
 ## 📄 License
 
 MIT License - See LICENSE file for details
